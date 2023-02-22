@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using System;
+using UnityEngine.Rendering;
 
 public class Player : MonoBehaviour
 {
@@ -10,6 +13,10 @@ public class Player : MonoBehaviour
     [Header("Player Stats")]
     [SerializeField] GameInput gameInput;
     [SerializeField] float moveSpeed = 7.0f;
+
+    [Header("Counter Stats")]
+    [SerializeField] ClearCounter selectedCounter;
+    public event EventHandler OnSelectedCounterChanged;
 
     private void Awake()
     {
@@ -24,13 +31,19 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        
+        gameInput.OnInteractAction += GameInput_OnInteractAction;
+    }
+
+    private void GameInput_OnInteractAction(object sender, System.EventArgs e)
+    {
+        Debug.Log("INTERACTT");
     }
 
     // Update is called once per frame
     void Update()
     {
         HandleMovement();
+        HandleInteractions();
     }
 
 
@@ -47,15 +60,85 @@ public class Player : MonoBehaviour
 
         bool canMove = !Physics.CapsuleCast(transform.position,transform.position + Vector3.up * playerHeight,playerRadius,moveDirection,maxDistance);
 
+
+        if(!canMove)
+        {
+            //Cannot move towards direction
+
+            //attempts only x axis
+            Vector2 moveDirX = new Vector3(moveDirection.x, 0, 0).normalized;
+
+            canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirX, maxDistance);
+
+            if(canMove)
+            {
+                moveDirection = moveDirX;
+            }
+            else
+            {
+                //cannot move onluy in x axis
+
+                //attempt only in the z axis
+                Vector2 moveDirZ = new Vector3(0, 0, moveDirection.z).normalized;
+
+                canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirZ, maxDistance);
+
+                if (canMove)
+                {
+                    //can move only in the z axis
+                    moveDirection = moveDirZ;
+                }
+                else
+                {
+                    //cannot move in any direction
+                }
+            }
+
+        }
+
+
+
+
         if(canMove)
         {
-            transform.position += moveDirection * moveSpeed * Time.deltaTime;
+            transform.position += moveDirection * maxDistance;
 
 
             float rotateSpeed = 10.0f;
 
             transform.forward = Vector3.Slerp(transform.forward, moveDirection, rotateSpeed * Time.deltaTime);
+
+            HandleInteractions();
         }
         
     }
+
+
+    void HandleInteractions()
+    {
+        SetSelectedCounter(selectedCounter);
+        //SetSelectedCounterTest();
+    }
+
+
+    #region Counter Functions
+
+    void SetSelectedCounter(ClearCounter selectedCounter)
+    {
+        this.selectedCounter = selectedCounter;
+
+        OnSelectedCounterChanged?.Invoke(this, EventArgs.Empty);
+
+    }
+
+
+    void SetSelectedCounterTest()
+    {
+        
+
+        OnSelectedCounterChanged?.Invoke(this, EventArgs.Empty);
+
+    }
+
+    #endregion
 }

@@ -5,12 +5,22 @@ using System;
 
 public class GameInput : MonoBehaviour
 {
+
+    public event EventHandler OnInteractAction;
     PlayerInputActions playerInputActions;
 
     void Start()
     {
         playerInputActions = new PlayerInputActions();
         playerInputActions.Player.Enable();
+
+
+        playerInputActions.Player.Interact.performed += Interact_performed;
+    }
+
+    private void Interact_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        OnInteractAction?.Invoke(this, EventArgs.Empty);
     }
 
     // Update is called once per frame
