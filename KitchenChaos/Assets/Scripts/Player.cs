@@ -15,8 +15,17 @@ public class Player : MonoBehaviour
     [SerializeField] float moveSpeed = 7.0f;
 
     [Header("Counter Stats")]
-    [SerializeField] ClearCounter selectedCounter;
-    public event EventHandler OnSelectedCounterChanged;
+    ClearCounter selectedCounter;
+    Vector3 lastInteractDirection;
+    [SerializeField] LayerMask countersLayerMask;
+    [SerializeField] LayerMask testLayerMask;
+
+    public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
+
+    public class OnSelectedCounterChangedEventArgs : EventArgs
+    {
+        public ClearCounter selectedCounter;
+    }
 
     private void Awake()
     {
@@ -44,12 +53,15 @@ public class Player : MonoBehaviour
     {
         HandleMovement();
         HandleInteractions();
+        
     }
 
 
     void HandleMovement()
     {
         Vector2 inputVector = gameInput.GetMovementVerctorNormalized();
+
+        inputVector = inputVector.normalized;
 
         Vector3 moveDirection = new Vector3(inputVector.x, 0.0f, inputVector.y);
 
@@ -94,6 +106,8 @@ public class Player : MonoBehaviour
                 }
             }
 
+           
+
         }
 
 
@@ -108,7 +122,7 @@ public class Player : MonoBehaviour
 
             transform.forward = Vector3.Slerp(transform.forward, moveDirection, rotateSpeed * Time.deltaTime);
 
-            HandleInteractions();
+           
         }
         
     }
@@ -116,8 +130,71 @@ public class Player : MonoBehaviour
 
     void HandleInteractions()
     {
-        SetSelectedCounter(selectedCounter);
-        //SetSelectedCounterTest();
+
+        Vector2 inputVector = gameInput.GetMovementVerctorNormalized();
+
+        Vector3 moveDirection = new Vector3(inputVector.x, 0.0f, inputVector.y);
+
+        if (moveDirection != Vector3.zero) lastInteractDirection = moveDirection;
+
+        float interactDistance = 2.0f;
+
+        RaycastHit raycastHit;
+
+        if (Physics.Raycast(transform.position, lastInteractDirection, out raycastHit, interactDistance, countersLayerMask))
+        {
+            if (raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
+            {
+                //Has ClearCounter
+                //clearCounter.Interact();
+                if (clearCounter != selectedCounter)
+                {
+                    //selectedCounter = clearCounter;
+
+                    SetSelectedCounter(clearCounter);
+
+                    //OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedEventArgs
+                    //{
+                    //    selectedCounter = selectedCounter
+                    //});
+                }
+                //clearCounter.Interact();
+            }
+            else
+            {
+                SetSelectedCounter(null);
+            }
+
+
+
+            Debug.Log("EL PHYSIC FUNCIONAAAAA");
+
+        }
+        else
+        {
+            SetSelectedCounter(null);
+        }
+    }
+
+
+    void HandleIT()
+    {
+        Vector2 inputVector = gameInput.GetMovementVerctorNormalized();
+
+        Vector3 moveDirection = new Vector3(inputVector.x, 0.0f, inputVector.y);
+
+        //if (moveDirection != Vector3.zero) lastInteractDirection = moveDirection;
+
+        float interactDistance = 2.0f;
+
+        RaycastHit raycastHit;
+
+        if (Physics.Raycast(transform.position, moveDirection, out raycastHit, interactDistance, testLayerMask))
+        {
+
+            Debug.Log("COLISIONEEEE");
+
+        }
     }
 
 
@@ -127,7 +204,10 @@ public class Player : MonoBehaviour
     {
         this.selectedCounter = selectedCounter;
 
-        OnSelectedCounterChanged?.Invoke(this, EventArgs.Empty);
+        OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedEventArgs
+        {
+            selectedCounter = selectedCounter
+        }); ;
 
     }
 
@@ -136,7 +216,7 @@ public class Player : MonoBehaviour
     {
         
 
-        OnSelectedCounterChanged?.Invoke(this, EventArgs.Empty);
+        //OnSelectedCounterChanged?.Invoke(this, EventArgs.Empty);
 
     }
 

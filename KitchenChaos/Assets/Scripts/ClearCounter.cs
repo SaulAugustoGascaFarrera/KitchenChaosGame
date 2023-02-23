@@ -15,4 +15,10 @@ public class ClearCounter : MonoBehaviour
     {
         
     }
+
+
+    public void Interact()
+    {
+        Debug.Log("HOLA ESTAS INTERACTRUANDO");
+    }
 }

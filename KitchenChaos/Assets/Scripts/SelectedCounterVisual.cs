@@ -13,9 +13,16 @@ public class SelectedCounterVisual : MonoBehaviour
         Player.Instance.OnSelectedCounterChanged += Instance_OnSelectedCounterChanged;
     }
 
-    private void Instance_OnSelectedCounterChanged(object sender, System.EventArgs e)
+    private void Instance_OnSelectedCounterChanged(object sender, Player.OnSelectedCounterChangedEventArgs e)
     {
-        Show();
+        if(e.selectedCounter == clearCounter)
+        {
+            Show();
+        }
+        else
+        {
+            Hide();
+        }
     }
 
     // Update is called once per frame
