@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using System;
 using UnityEngine.Rendering;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour , IKitchenObjectParent
 {
 
     public static Player Instance { get; set; }
@@ -13,12 +13,17 @@ public class Player : MonoBehaviour
     [Header("Player Stats")]
     [SerializeField] GameInput gameInput;
     [SerializeField] float moveSpeed = 7.0f;
+    [SerializeField] float interactDistance = 2.5f;
+    [SerializeField] Transform kitchenObjectHoldPoint;
 
     [Header("Counter Stats")]
     ClearCounter selectedCounter;
     Vector3 lastInteractDirection;
     [SerializeField] LayerMask countersLayerMask;
     [SerializeField] LayerMask testLayerMask;
+
+    [Header("Kitchen Object Stats")]
+    KitchenObject kitchenObject;
 
     public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
 
@@ -45,7 +50,10 @@ public class Player : MonoBehaviour
 
     private void GameInput_OnInteractAction(object sender, System.EventArgs e)
     {
-        Debug.Log("INTERACTT");
+        if(selectedCounter != null)
+        {
+            selectedCounter.Interact(this);
+        }
     }
 
     // Update is called once per frame
@@ -137,8 +145,6 @@ public class Player : MonoBehaviour
 
         if (moveDirection != Vector3.zero) lastInteractDirection = moveDirection;
 
-        float interactDistance = 2.0f;
-
         RaycastHit raycastHit;
 
         if (Physics.Raycast(transform.position, lastInteractDirection, out raycastHit, interactDistance, countersLayerMask))
@@ -164,10 +170,6 @@ public class Player : MonoBehaviour
             {
                 SetSelectedCounter(null);
             }
-
-
-
-            Debug.Log("EL PHYSIC FUNCIONAAAAA");
 
         }
         else
@@ -220,5 +222,39 @@ public class Player : MonoBehaviour
 
     }
 
+
+
     #endregion
+
+
+    #region Kitchen Object Interface Functions
+
+
+    public Transform GetKitchenObjectFollowTransform()
+    {
+        return kitchenObjectHoldPoint;
+    }
+
+    public void SetKitchenObject(KitchenObject kitchenObject)
+    {
+        this.kitchenObject = kitchenObject;
+    }
+
+    public KitchenObject GetKitchenObject()
+    {
+        return kitchenObject;
+    }
+
+    public void ClearKitchenObhject()
+    {
+        kitchenObject = null;
+    }
+
+    public bool HasKitchenObhject()
+    {
+        return kitchenObject != null;
+    }
+
+    #endregion
+
 }
