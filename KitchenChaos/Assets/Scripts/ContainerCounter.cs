@@ -2,39 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ClearCounter : BaseCounter,IKitchenObjectParent
+public class ContainerCounter : BaseCounter,IKitchenObjectParent
 {
 
-
-    [Header("Clear Counter Atts")]
     [SerializeField] KitchenObjectSO kitchenObjectSO;
     [SerializeField] Transform counterToPoint;
-    [SerializeField] ClearCounter secondClearCounter;
-    [SerializeField] bool testing = false;
 
     KitchenObject kitchenObject;
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if(testing && Input.GetKeyDown(KeyCode.T))
-        {
-            if(kitchenObject != null)
-            {
-                //kitchenObject.SetOnClearCounter(secondClearCounter);
-                kitchenObject.SetKitchenObjectParent(secondClearCounter);
-            }
-        }
-    }
-
+   
 
     public override void Interact(Player player)
     {
-        if(kitchenObject == null)
+        if (kitchenObject == null)
         {
             Transform kitchenObjectTranform = Instantiate(kitchenObjectSO.prefab, counterToPoint);
             //kitchenObjectTranform.localPosition = Vector3.zero;
@@ -81,5 +61,3 @@ public class ClearCounter : BaseCounter,IKitchenObjectParent
         return kitchenObject != null;
     }
 }
-
-
