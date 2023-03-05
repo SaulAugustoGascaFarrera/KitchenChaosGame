@@ -5,37 +5,42 @@ using UnityEngine;
 public class ClearCounter : BaseCounter
 {
 
-
     [Header("Clear Counter Atts")]
     [SerializeField] KitchenObjectSO kitchenObjectSO;
     [SerializeField] ClearCounter secondClearCounter;
     [SerializeField] bool testing = false;
-
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //if(testing && Input.GetKeyDown(KeyCode.T))
-        //{
-        //    if(kitchenObject != null)
-        //    {
-        //        //kitchenObject.SetOnClearCounter(secondClearCounter);
-        //        kitchenObject.SetKitchenObjectParent(secondClearCounter);
-        //    }
-        //}
-    }
-
-
     public override void Interact(Player player)
     {
-        
-    }
+        if(!HasKitchenObhject())
+        {
+            if(player.HasKitchenObhject())
+            {
+                //player is carrying something
+                player.GetKitchenObject().SetKitchenObjectParent(this);
+            }
+            else
+            {
+                //Player not carrying anything
+            }
+            
+        }
+        else
+        {
+            //there is a kitchen object here
 
-    
+            if (player.HasKitchenObhject())
+            {
+                //player is carrying something
+                player.GetKitchenObject().SetKitchenObjectParent(this);
+            }
+            else
+            {
+                //Player not carrying anything
+                GetKitchenObject().SetKitchenObjectParent(player);
+            }
+
+        }
+    } 
 }
 
 
