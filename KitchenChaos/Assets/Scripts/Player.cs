@@ -46,6 +46,15 @@ public class Player : MonoBehaviour , IKitchenObjectParent
     void Start()
     {
         gameInput.OnInteractAction += GameInput_OnInteractAction;
+        gameInput.OnInteractAlternateAction += GameInput_OnInteractAlternateAction;
+    }
+
+    private void GameInput_OnInteractAlternateAction(object sender, EventArgs e)
+    {
+        if(selectedCounter != null)
+        {
+            selectedCounter.InteractAlternate(this);
+        }
     }
 
     private void GameInput_OnInteractAction(object sender, System.EventArgs e)
@@ -88,7 +97,7 @@ public class Player : MonoBehaviour , IKitchenObjectParent
             //attempts only x axis
             Vector2 moveDirX = new Vector3(moveDirection.x, 0, 0).normalized;
 
-            canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirX, maxDistance);
+            canMove = moveDirection.x != 0 && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirX, maxDistance);
 
             if(canMove)
             {
@@ -101,7 +110,7 @@ public class Player : MonoBehaviour , IKitchenObjectParent
                 //attempt only in the z axis
                 Vector2 moveDirZ = new Vector3(0, 0, moveDirection.z).normalized;
 
-                canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirZ, maxDistance);
+                canMove = moveDirection.z != 0 && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirZ, maxDistance);
 
                 if (canMove)
                 {
@@ -179,26 +188,6 @@ public class Player : MonoBehaviour , IKitchenObjectParent
     }
 
 
-    void HandleIT()
-    {
-        Vector2 inputVector = gameInput.GetMovementVerctorNormalized();
-
-        Vector3 moveDirection = new Vector3(inputVector.x, 0.0f, inputVector.y);
-
-        //if (moveDirection != Vector3.zero) lastInteractDirection = moveDirection;
-
-        float interactDistance = 2.0f;
-
-        RaycastHit raycastHit;
-
-        if (Physics.Raycast(transform.position, moveDirection, out raycastHit, interactDistance, testLayerMask))
-        {
-
-            Debug.Log("COLISIONEEEE");
-
-        }
-    }
-
 
     #region Counter Functions
 
@@ -212,16 +201,6 @@ public class Player : MonoBehaviour , IKitchenObjectParent
         }); ;
 
     }
-
-
-    void SetSelectedCounterTest()
-    {
-        
-
-        //OnSelectedCounterChanged?.Invoke(this, EventArgs.Empty);
-
-    }
-
 
 
     #endregion
