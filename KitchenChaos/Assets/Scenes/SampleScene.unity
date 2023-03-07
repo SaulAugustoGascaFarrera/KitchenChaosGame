@@ -684,12 +684,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1834111420071721237, guid: e5941b03a37f64b4d981d8fdc0ee74c1,
-        type: 3}
-      propertyPath: CutKitchenObjectSO
-      value: 
-      objectReference: {fileID: 11400000, guid: 4610bd741df75fe4189eb16ea60e6fc9,
-        type: 2}
     - target: {fileID: 3107844009320417214, guid: e5941b03a37f64b4d981d8fdc0ee74c1,
         type: 3}
       propertyPath: m_RootOrder
